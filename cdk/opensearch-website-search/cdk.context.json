@@ -1,0 +1,27 @@
+{
+  "stack_prefix": "test-one-",
+  "cluster_stack_name": "opensearch-cluster",
+  "network_stack_name": "network",
+  "search_access_stack_name": "gateway-lambda",
+  "monitoring_stack_name": "monitoring",
+  "cidr": "10.9.0.0/21",
+  "distribution": "tar",
+  "keypair": "",
+  "architecture": "x64",
+  "ami_id": "",
+  "url": "https://artifacts.opensearch.org/releases/bundle/opensearch/1.0.0/opensearch-1.0.0-linux-x64.tar.gz",
+  "dashboards_url": "https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.0.0/opensearch-dashboards-1.0.0-linux-x64.tar.gz",
+  "master_node_count": "2",
+  "data_node_count": "3",
+  "client_node_count": "3",
+  "nlb_opensearch_port": "80",
+  "nlb_dashboards_port": "5601",
+  "security": "enable",
+  "search_user": "",
+  "search_pass": "",
+  "monitoring_user": "",
+  "monitoring_pass": "",
+  "allowed_origins": [
+    "*"
+  ]
+}
