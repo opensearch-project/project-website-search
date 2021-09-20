@@ -1,0 +1,7 @@
+README.md
+setup.py
+website_search_cdk/opensearch_website_search_cdk.egg-info/PKG-INFO
+website_search_cdk/opensearch_website_search_cdk.egg-info/SOURCES.txt
+website_search_cdk/opensearch_website_search_cdk.egg-info/dependency_links.txt
+website_search_cdk/opensearch_website_search_cdk.egg-info/requires.txt
+website_search_cdk/opensearch_website_search_cdk.egg-info/top_level.txt

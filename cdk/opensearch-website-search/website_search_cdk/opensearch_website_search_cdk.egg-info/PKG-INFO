@@ -1,0 +1,138 @@
+Metadata-Version: 2.1
+Name: opensearch-website-search-cdk
+Version: 0.0.1
+Summary: Infra set up for OpenSearch cluster that powers search functionality on opensearch.org using cdk
+Home-page: UNKNOWN
+Author: author
+License: UNKNOWN
+Description: p
+        # CDK for deploying multi-node clusters
+        
+        This project deploys two stacks:
+        1. Network stack: Sets up networking resources like VPC, subnets, AZ, security group, etc.
+        2. Infrastructure Stack: Sets up EC2 (installs ODFE 1.13.2 by default using userdata), cloudwatch logging, load balancer. Check your cluster log in the log group created from your stack in the cloudwatch.
+        
+        ### CDK Installation
+        
+        [Install CDK](https://docs.aws.amazon.com/cdk/latest/guide/cli.html) using `npm install -g aws-cdk`
+        
+        
+        The `cdk.json` file tells the CDK Toolkit how to execute your app.
+        
+        This project is set up like a standard Python project.  The initialization
+        process also creates a virtualenv within this project, stored under the `.venv`
+        directory.  To create the virtualenv it assumes that there is a `python3`
+        (or `python` for Windows) executable in your path with access to the `venv`
+        package. If for any reason the automatic creation of the virtualenv fails,
+        you can create the virtualenv manually.
+        
+        To manually create a virtualenv on MacOS and Linux:
+        
+        ```
+        $ python3 -m venv .venv
+        ```
+        
+        After the init process completes and the virtualenv is created, you can use the following
+        step to activate your virtualenv.
+        
+        ```
+        $ source .venv/bin/activate
+        ```
+        
+        If you are a Windows platform, you would activate the virtualenv like this:
+        
+        ```
+        % .venv\Scripts\activate.bat
+        ```
+        
+        Once the virtualenv is activated, you can install the required dependencies.
+        
+        ```
+        $ pip install -r requirements.txt
+        ```
+        
+        At this point you can now synthesize the CloudFormation template for this code.
+        
+        ```
+        $ cdk synth
+        ```
+        
+        To add additional dependencies, for example other CDK libraries, just add
+        them to your `setup.py` file and rerun the `pip install -r requirements.txt`
+        command.
+        
+        ## Prerequisites
+        1. Python 3 required to run cdk
+        2. AWS credentials configured locally or you can pass them during deployment in app.py file. [More information](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)   
+        3. EC2 keypair in the deploying region to passed as context variable.
+        
+        ## Cluster deploy
+        The cdk currently only supports TAR distribution hence passing any other argument as distribution would result in error.
+        You can check the cdk.context.json file for the default context variables. Consider them as parameters. Enter the appropriate values for keypair, url and dashboards_url. 
+        Any of the context variable can be overwritten using the `-c` or `--context` flag in the deploy command.
+        
+        In order to deploy the stacks follow the following steps:
+        1. Activate the python virtual environment
+        2. Enter the required values in `cdk.context.json` file:
+           - cidr: CIDR to create VPC with (defaults to 10.9.0.0/21).
+           - distribution: currently we only support `tar` distribution.  
+           - keypair: your EC2 keypair in the deploying region. Please check that the key exists and you are deploying in the same region, 
+           - url: OpenSearch download url eg:https://artifacts.opensearch.org/snapshots/bundle/opensearch/1.0.0-rc1/opensearch-1.0.0-rc1-linux-x64.tar.gz , 
+           - dashboards_url: OpenSeaech download url eg: https://artifacts.opensearch.org/snapshots/bundle/opensearch-dashboards/1.0.0-rc1/opensearch-dashboards-1.0.0-rc1-linux-x64.tar.gz
+           
+        Please check that the urls are valid as they won't throw an error explicitly. These links are used in the userdata of an EC2 instance.
+        
+        3. If you have all values entered in cdk.context.json:
+           ```
+           cdk deploy --all
+           ```
+           If you want to enter the parameters via command line:
+            ```
+            cdk deploy --all -c keypair=your_ec2_keyPair -c url=<opensearch_download_link> -c dashboards_url=<dashboards_download_link>
+            ``` 
+            For non-interactive shell: 
+            ```
+            cdk deploy --all --require-approval=never
+            ```
+        
+        ### SSH
+        Only clients nodes are SSH-able. SSH into any client node using below command
+        
+        `ssh -A ec2-user@<ip> -i <yourKeyPair>`
+        
+        You can now SSH into any other node (master, seed , data, etc) from here. The `-A` flag enables forwarding of the authentication agent connection
+        ## Teardown
+        To delete a particular stack use the command:
+        ```
+        cdk destroy <stackName>
+        ```
+        
+        To delete all the created stacks together use the command
+        ```
+        cdk destroy --all
+        ```
+        _Note: If you deployed the stack using command line parameters (i.e. cdk.context.json has empty values), you need to pass the parameters during `cdk destroy` as well_ 
+        ```
+        cdk destroy --all -c keypair=your_ec2_keyPair -c url=<opensearch_download_link> -c dashboards_url=<dashboards_download_link>
+        ```
+        ## Useful commands
+        
+         * `cdk ls`          list all stacks in the app
+         * `cdk synth`       emits the synthesized CloudFormation template
+         * `cdk deploy`      deploy this stack to your default AWS account/region
+         * `cdk diff`        compare deployed stack with current state
+         * `cdk docs`        open CDK documentation
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: JavaScript
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Utilities
+Classifier: Typing :: Typed
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
