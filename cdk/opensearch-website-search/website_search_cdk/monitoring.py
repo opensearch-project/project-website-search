@@ -32,7 +32,7 @@ class MonitoringStack(cdk.Stack):
     # TODO: Configure Lambda provisioned concurrency, requires setting alias, version etc
     monitoring_lambda = aws_lambda.Function(self, 'MonitoringLambda',
                                             handler='monitor.handler',
-                                            runtime=aws_lambda.Runtime.PYTHON_3_8,
+                                            runtime=aws_lambda.Runtime.PYTHON_3_9,
                                             code=aws_lambda.Code.asset('lambdas/monitoring-lambda'),
                                             vpc=vpc,
                                             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),

@@ -21,7 +21,7 @@ class ApiLambdaStack(cdk.Stack):
     # TODO: Configure Lambda provisioned concurrency
     search_lambda = aws_lambda.Function(self, 'search-lambda',
                                         handler='doc-search.handler',
-                                        runtime=aws_lambda.Runtime.PYTHON_3_8,
+                                        runtime=aws_lambda.Runtime.PYTHON_3_9,
                                         code=aws_lambda.Code.asset('lambdas/search-lambda'),
                                         vpc=vpc,
                                         vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
