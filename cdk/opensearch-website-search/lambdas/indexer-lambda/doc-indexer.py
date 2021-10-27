@@ -151,8 +151,8 @@ def create_index_name_from_prefix(prefix=INDEX_NAME_PREFIX):
 def yield_docs(bucket, base_path, current_version, index_name):
   s3 = boto3.client('s3')  # picks up the same region where this Lambda is deployed
   index_file_key = base_path + '/search-index.json'
-  obj = s3.Object(bucket, index_file_key)
-  docs_json = json.loads(obj.get()['Body'].read().decode('utf-8'))
+  obj = s3.get_object(Bucket=bucket, Key=index_file_key)
+  docs_json = json.loads(obj['Body'].read().decode('utf-8'))
   # let the json.JSONDecodeError go through to calling function
 
   for doc in docs_json:
@@ -246,7 +246,7 @@ def do_indexing(os_client, job_id, user_params):
     print("Document deletion response: ", delete_docs_status)
     # delete_status['deleted'] > 0 should be true, else attempt deleting again ?
 
-    bulk_response = helpers.bulk(os_client, yield_docs(bucket, base_path, new_index), chunk_size=5,
+    bulk_response = helpers.bulk(os_client, yield_docs(bucket, base_path, current_version, new_index), chunk_size=5,
                                  request_timeout=20)
     print("Existing alias - Bulk response: ", bulk_response)
     print(SECTION_SEPARATOR)
@@ -275,7 +275,7 @@ def handler(event, context):
 
   job_id = event['CodePipeline.job']['id']
   user_params = json.loads(event['CodePipeline.job']['data']['actionConfiguration']['configuration']['UserParameters'])
-  invoke_id = context.invokeid
+  invoke_id = "abcde12345"  # context.invokeid
 
   pipeline = boto3.client('codepipeline')
 
