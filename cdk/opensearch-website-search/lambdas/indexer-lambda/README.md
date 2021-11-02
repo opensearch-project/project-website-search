@@ -27,7 +27,13 @@ This AWS Lambda function indexes latest documentation to make it searchable on o
             "Effect": "Allow",
             "Action": "secretsmanager:GetSecretValue",
             "Resource": "<arn-for-secret-with-indexing-permissions-to-opensearch>"
-        },
+        }
+    ]
+}
+```
+For monitoring and debugging, Cloudwatch Logs can be enabled by adding the following policy:
+
+```
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
@@ -41,9 +47,9 @@ This AWS Lambda function indexes latest documentation to make it searchable on o
                 "<arn-for-log-stream>"
             ]
         }
-    ]
-}
 ```
+
+
 
 - Environment Variables:
 
