@@ -132,7 +132,7 @@ class ClusterStack(cdk.Stack):
         "__SECURITY_PARAM__": security
       },
       "master": {
-        "__NODE_NAME__": "__MASTER__",
+        "__NODE_NAME__": "master-node",
         "__MASTER__": "true",
         "__DATA__": "false",
         "__INGEST__": "false"
