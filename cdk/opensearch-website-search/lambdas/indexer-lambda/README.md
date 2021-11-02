@@ -11,32 +11,35 @@ This AWS Lambda function indexes latest documentation to make it searchable on o
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
-                "s3:GetObject",
+                "codepipeline:PutJobFailureResult",
+                "codepipeline:PutJobSuccessResult"
+            ],
+            "Resource": "<arn-for-codepipeline-where-indexing-lambda-function-used>"
+        },
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "<arn-for-s3-bucket>"
+        },
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "<arn-for-secret-with-indexing-permissions-to-opensearch>"
+        },
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
                 "logs:CreateLogStream",
-                "secretsmanager:GetSecretValue",
+                "logs:CreateLogGroup",
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:secretsmanager:*:<aws-account-id>:secret:*",
-                "arn:aws:s3:::docsite-versioned-abbas/*",
-                "arn:aws:logs:us-west-2:<aws-account-id>:log-group:/aws/lambda/docsite-versioned-search-indexer:*"
+                "<arn-for-log-group>",
+                "<arn-for-log-stream>"
             ]
-        },
-        {
-            "Sid": "VisualEditor1",
-            "Effect": "Allow",
-            "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:us-west-2:<aws-account-id>:*"
-        },
-        {
-            "Sid": "VisualEditor2",
-            "Effect": "Allow",
-            "Action": [
-                "codepipeline:PutJobFailureResult",
-                "codepipeline:PutJobSuccessResult",
-                "secretsmanager:ListSecrets"
-            ],
-            "Resource": "*"
         }
     ]
 }
@@ -78,7 +81,7 @@ Deploy using AWS CLI
 
 ```
 aws lambda update-function-code \
-    --function-name  my-function \
+    --function-name  <your-lambda-function-name> \
     --zip-file fileb:/my-deployment-package.zip
 ```
 

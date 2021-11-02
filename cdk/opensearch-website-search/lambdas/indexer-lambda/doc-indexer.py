@@ -182,7 +182,7 @@ def send_failure_to_pipeline(pipeline, job_id, message, invoke_id):
   return job_response
 
 
-def do_indexing(os_client, job_id, user_params):
+def do_indexing(os_client, user_params):
 
   base_path = user_params['DESTINATION_KEY']
   current_version = user_params['CURRENT_VERSION']
@@ -285,7 +285,7 @@ def handler(event, context):
 
     os_client = OpenSearch([PROXY_ENDPOINT], http_auth=(secret_manager.get_username(), secret_manager.get_password()))
 
-    do_indexing(os_client, job_id, user_params)
+    do_indexing(os_client, user_params)
   except Exception as e:
     print(str(e))
     return send_failure_to_pipeline(pipeline, job_id, str(e), invoke_id)
