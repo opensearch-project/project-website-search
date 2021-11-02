@@ -33,7 +33,8 @@ uuid=$(uuidgen | cut -d - -f 1)
 sudo sed -i /^node.name/s/node/"$uuid"/2 config/opensearch.yml
 # Disabling HTTPS since all calls within VPC
 sudo sed -i /plugins.security.ssl.http.enabled/s/true/false/1 plugins/opensearch-security/tools/install_demo_configuration.sh
-sudo bin/opensearch-plugin install https://artifacts.opensearch.org/snapshots/native-plugins/opensearch/discovery-ec2/discovery-ec2-1.0.0-SNAPSHOT.zip --batch
+sudo bin/opensearch-plugin install discovery-ec2
+sudo bin/opensearch-plugin install repository-s3
 sudo -u ec2-user touch install.log
 sudo -u ec2-user nohup ./opensearch-tar-install.sh > install.log 2>&1 &
 logfile=$(pwd)/logs/${!stackName}.log
