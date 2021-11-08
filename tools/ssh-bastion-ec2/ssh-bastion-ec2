@@ -10,6 +10,7 @@ import base64
 import logging
 import os
 import random
+import subprocess
 import sys
 import tempfile
 
@@ -118,8 +119,8 @@ def ssh_ec2(remote_host, bastion_ip, key):
   retVal = 1
   try:
     tmp_key_path, ssh_cmd = _get_ssh_command(remote_host, bastion_ip, key)
-    logging.info("SSH_COMMAND: %s", ssh_cmd)
-    retVal = os.system(ssh_cmd)
+    logging.info("SSH_COMMAND: %s", ' '.join(ssh_cmd))
+    retVal = subprocess.call(ssh_cmd)
   except Exception as e:
     # It is bad practice to except on any exception but we want to remove
     # the tmp ssh key regardless of what might happen.
@@ -138,13 +139,11 @@ def _get_ssh_command(remote_host, bastion_ip, key):
   try:
     with os.fdopen(tmp_key_fd, "w") as f:
       f.write(key)
-    return tmp_key_path, (
-      "/usr/bin/ssh -o StrictHostKeyChecking=accept-new -A -i {} -J {} {}".format(
-        tmp_key_path,
-        template.format(user, bastion_ip),
-        template.format(user, remote_host)
-      )
-    )
+
+    command = ['/usr/bin/ssh', '-o', 'StrictHostKeyChecking=accept-new', '-A',
+               '-i', tmp_key_path, '-J', template.format(user, bastion_ip), template.format(user, remote_host)]
+
+    return tmp_key_path, command
   except Exception as e:
     logging.exception("Failed while writing temp key to file")
     os.remove(tmp_key_path)
