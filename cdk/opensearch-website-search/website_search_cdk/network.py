@@ -54,6 +54,9 @@ class Network(cdk.Stack):
                        subnet_configuration=[private_subnet, public_subnet]
                        )
 
+    vpc_flow_logs = ec2.FlowLog(self, stack_prefix + "vpc-flow-logs",
+                                resource_type=ec2.FlowLogResourceType.from_vpc(self.vpc))
+
     self.security_group = ec2.SecurityGroup(self, stack_prefix + "cdk-security-group",
                                             vpc=self.vpc,
                                             description="Opensearch website search domain security group",
