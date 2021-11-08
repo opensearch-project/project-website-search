@@ -232,7 +232,8 @@ class ClusterStack(cdk.Stack):
     self.nlb = elb.NetworkLoadBalancer(self, stack_prefix + "NetworkLoadBalancer",
                                        vpc=vpc,
                                        internet_facing=False,
-                                       vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE))
+                                       vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                       deletion_protection=True)
 
     self.opensearch_listener = self.nlb.add_listener("opensearch", port=nlb_opensearch_port,
                                                      protocol=elb.Protocol.TCP)
