@@ -3,7 +3,12 @@ import boto3
 import logging
 import requests
 import os
+from enum import Enum
 from requests.auth import HTTPBasicAuth
+
+# TODO: Adds redundant request ID into logs, fix logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 username = os.getenv('MONITORING_USER')
 password = os.getenv('MONITORING_PASS')
@@ -15,9 +20,6 @@ dashboards_base_url = 'http://' + nlb_endpoint + ':' + nlb_dashboards_port
 
 http_basic_auth = HTTPBasicAuth(username, password)
 
-FORMAT = '%(levelname)s: %(message)s'
-logging.basicConfig(level=logging.INFO, format=FORMAT)
-logger = logging.getLogger()
 
 """
 MetricData=[
@@ -50,6 +52,21 @@ MetricData=[
 """
 
 
+class OpenSearchHealthStatus(Enum):
+  RED = 1
+  YELLOW = 2
+  GREEN = 3
+
+
+class ShardCountTypes(Enum):
+  ACTIVE_PRIMARY_SHARDS = 1
+  ACTIVE_SHARDS = 2
+  DELAYED_UNASSIGNED_SHARDS = 3
+  INITIALIZING_SHARDS = 4
+  RELOCATING_SHARDS = 5
+  UNASSIGNED_SHARDS = 6
+
+
 def to_upper_camel_case(snake_str):
   components = snake_str.split('_')
   return components[0] + ''.join(x.title() for x in components[1:])
@@ -77,10 +94,7 @@ def check_cluster_health(metric_data):
 
   STATUS_PREFIX = 'ClusterStatus.'
   SHARD_PREFIX = 'Shards.'
-  COLORS = ["green", "red", "yellow"]
-  SHARD_COUNT_METRICS = ["active_primary_shards", "active_shards",
-                         "delayed_unassigned_shards", "initializing_shards",
-                         "relocating_shards", "unassigned_shards"]
+
   try:
     res = requests.get(cluster_health_url, auth=http_basic_auth, headers=headers, verify=False)
     health = res.json()
@@ -104,17 +118,18 @@ def check_cluster_health(metric_data):
 
     # cluster health status metric
     if "status" in health:
-      for color in COLORS:
-        if health['status'] == color:
+      for status in OpenSearchHealthStatus:
+        colored_status = status.name.lower()
+        if health['status'] == colored_status:
           metric_data.add({
-            'MetricName': STATUS_PREFIX + color,
+            'MetricName': STATUS_PREFIX + colored_status,
             'Value': 1.0,
             'Unit': 'Count',
             'StorageResolution': 60
           })
         else:
           metric_data.add({
-            'MetricName': STATUS_PREFIX + color,
+            'MetricName': STATUS_PREFIX + colored_status,
             'Value': 0.0,
             'Unit': 'Count',
             'StorageResolution': 60
@@ -132,7 +147,8 @@ def check_cluster_health(metric_data):
     logger.info("Successfully collected node count metric")
 
     # Add shard count metric
-    for shard_type in SHARD_COUNT_METRICS:
+    for shard_count_type in ShardCountTypes:
+      shard_type = shard_count_type.name.lower()
       if shard_type in health:
         metric_data.add({
           'MetricName': SHARD_PREFIX + to_upper_camel_case(shard_type.removeprefix("_shards")),
