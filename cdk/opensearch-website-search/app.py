@@ -12,6 +12,7 @@ from website_search_cdk.infra import ClusterStack
 from website_search_cdk.infra import Architecture, Security
 from website_search_cdk.api_lambda import ApiLambdaStack
 from website_search_cdk.monitoring import MonitoringStack
+from website_search_cdk.alarms import AlarmsStack
 from website_search_cdk.bastions import Bastions
 
 env = core.Environment(account=os.environ.get("CDK_DEPLOY_ACCOUNT", os.environ["CDK_DEFAULT_ACCOUNT"]),
@@ -71,6 +72,7 @@ opensearh_infra = ClusterStack(app, stack_prefix + cluster_stack_name, vpc=netwo
 api_lambda = ApiLambdaStack(app, stack_prefix + search_access_stack_name, network.vpc, opensearh_infra.nlb,
                             opensearh_infra.opensearch_listener, env=env)
 monitoring = MonitoringStack(app, stack_prefix + monitoring_stack_name, network.vpc, opensearh_infra.nlb, env=env)
+alarms = AlarmsStack(app, stack_prefix + "alarms", env=env)
 bastion_host_infra = Bastions(app, stack_prefix + 'bastion-hosts', network.vpc, env=env)
 
 app.synth()
