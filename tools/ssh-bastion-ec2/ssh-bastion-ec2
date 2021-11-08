@@ -38,7 +38,6 @@ def get_bastion_ips(tag_name, tag_value):
   return bastion_ips
 
 
-
 def get_secret(secret_name):
   """
   Utility method to retrieve the private key from AWS Secrets Manager
@@ -138,7 +137,7 @@ def _get_ssh_command(remote_host, bastion_ip, key):
     with os.fdopen(tmp_key_fd, "w") as f:
       f.write(key)
     return tmp_key_path, (
-      "/usr/bin/ssh -o StrictHostKeyChecking=no -A -i {} -J {} {}".format(
+      "/usr/bin/ssh -o StrictHostKeyChecking=accept-new -A -i {} -J {} {}".format(
         tmp_key_path,
         template.format(user, bastion_ip),
         template.format(user, remote_host)
