@@ -1,5 +1,6 @@
 import json
 import boto3
+import logging
 import requests
 import os
 from requests.auth import HTTPBasicAuth
@@ -8,11 +9,15 @@ username = os.getenv('MONITORING_USER')
 password = os.getenv('MONITORING_PASS')
 nlb_endpoint = os.getenv('NLB_ENDPOINT')
 nlb_opensearch_port = os.getenv('NLB_OPENSEARCH_PORT', "80")
-nlb_dashboards_port = os.getenv('NLB_OPENSEARCH_PORT', "5601")
+nlb_dashboards_port = os.getenv('NLB_DASHBOARD_PORT', "5601")
 opensearch_base_url = 'http://' + nlb_endpoint + ':' + nlb_opensearch_port
 dashboards_base_url = 'http://' + nlb_endpoint + ':' + nlb_dashboards_port
 
 http_basic_auth = HTTPBasicAuth(username, password)
+
+FORMAT = '%(levelname)s: %(message)s'
+logging.basicConfig(level=logging.INFO, format=FORMAT)
+logger = logging.getLogger()
 
 """
 MetricData=[
@@ -95,7 +100,7 @@ def check_cluster_health(metric_data):
         'Unit': 'Count',
         'StorageResolution': 60
       })
-    print("Successfully collected master metrics")
+    logger.info("Successfully collected master metrics")
 
     # cluster health status metric
     if "status" in health:
@@ -114,7 +119,7 @@ def check_cluster_health(metric_data):
             'Unit': 'Count',
             'StorageResolution': 60
           })
-    print("Successfully emitted cluster status metrics")
+    logger.info("Successfully collected cluster status metrics")
 
     # Add node count metric
     if "number_of_nodes" in health:
@@ -124,7 +129,7 @@ def check_cluster_health(metric_data):
         'Unit': 'Count',
         'StorageResolution': 60
       })
-    print("Successfully collected node count metric")
+    logger.info("Successfully collected node count metric")
 
     # Add shard count metric
     for shard_type in SHARD_COUNT_METRICS:
@@ -135,7 +140,7 @@ def check_cluster_health(metric_data):
           'Unit': 'Count',
           'StorageResolution': 60
         })
-    print("Successfully collected shard count metrics")
+    logger.info("Successfully collected shard count metrics")
 
     # Add pending task metric
     if "number_of_pending_tasks" in health:
@@ -145,7 +150,7 @@ def check_cluster_health(metric_data):
         'Unit': 'Count',
         'StorageResolution': 60
       })
-    print("Successfully collected pending_tasks metrics")
+    logger.info("Successfully collected pending_tasks metrics")
 
     metric_data.add({
       'MetricName': 'ClusterHealth.Failed',
@@ -153,13 +158,40 @@ def check_cluster_health(metric_data):
       'Unit': 'Count',
       'StorageResolution': 60
     })
-    print("All check_cluster_health metrics collected")
+    logger.info("All check_cluster_health metrics collected")
 
   except Exception as e:
-    print(e)
+    logger.exception(e)
     metric_data.add({
       'MetricName': 'ClusterHealth.Failed',
       'Value': 1.0,
+      'Unit': 'Count',
+      'StorageResolution': 60
+    })
+
+
+def check_dashboards_health(metric_data):
+  dashboards_status_url = dashboards_base_url + '/api/status'
+  val = 0.0
+  try:
+    res = requests.get(dashboards_status_url).json()
+
+    if res['status']['overall']['state'] == 'green':
+      val = 1.0
+
+    metric_data.add({
+      'MetricName': 'OpenSearchDashboardsHealthyNodes',
+      'Value': val,
+      'Unit': 'Count',
+      'StorageResolution': 60
+    })
+
+    logger.info("All check_dashboards_health metrics collected")
+  except Exception as e:
+    logger.exception(e)
+    metric_data.add({
+      'MetricName': 'OpenSearchDashboardsHealthyNodes',
+      'Value': 0.0,
       'Unit': 'Count',
       'StorageResolution': 60
     })
@@ -169,5 +201,6 @@ def handler(event, context):
   cw = boto3.client("cloudwatch")
   metrics = CWMetricData("opensearch-website-search")
   check_cluster_health(metrics)
+  check_dashboards_health(metrics)
   cw.put_metric_data(Namespace=metrics.get_namespace(),
                      MetricData=metrics.get_all_metrics())
