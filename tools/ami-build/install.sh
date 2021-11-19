@@ -9,7 +9,7 @@ sudo yum install -y libnss3.so xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x
 
 #Installing OpenSearch from tar distribution
 echo "========INSTALLING AND SETTING UP OPENSEARCH ================"
-OPENSEARCH_TAR_URL="https://artifacts.opensearch.org/releases/bundle/opensearch/1.0.0/opensearch-1.0.0-linux-x64.tar.gz"
+OPENSEARCH_TAR_URL="https://artifacts.opensearch.org/releases/bundle/opensearch/1.1.0/opensearch-1.1.0-linux-x64.tar.gz"
 cd ~ || exit
 curl "$OPENSEARCH_TAR_URL" -o opensearch
 tar zxf opensearch
@@ -17,13 +17,14 @@ chown -R ec2-user:ec2-user  opensearch-*
 rm -rf opensearch
 mv opensearch-* opensearch
 cd opensearch || exit
-sudo bin/opensearch-plugin install https://artifacts.opensearch.org/snapshots/native-plugins/opensearch/discovery-ec2/discovery-ec2-1.0.0-SNAPSHOT.zip --batch
+sudo -u ec2-user bin/opensearch-plugin install discovery-ec2 --batch
+sudo -u ec2-user bin/opensearch-plugin install repository-s3 --batch
 sudo -u ec2-user mkdir systemd
 sudo -u ec2-user touch install.log
 
 #Installing OpenSearch Dashboards from tar distribution
 echo "========INSTALLING AND SETTING UP OPENSEARCH DAHSBOARDS ================"
-dashboards_url="https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.0.0/opensearch-dashboards-1.0.0-linux-x64.tar.gz"
+dashboards_url="https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.1.0/opensearch-dashboards-1.1.0-linux-x64.tar.gz"
 cd ~ || exit
 curl "$dashboards_url" -o opensearch-dashboards
 tar zxf opensearch-dashboards

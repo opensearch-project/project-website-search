@@ -9,7 +9,7 @@ packer {
 
 //https://www.packer.io/docs/builders/amazon/ebs#ami-configuration
 source "amazon-ebs" "amazon-linux-2" {
-  ami_name      = "opensearch-1.0.0"
+  ami_name      = "opensearch-1.1.0"
   instance_type = "m5.large"
   region        = "us-west-2"
   source_ami    = "ami-0c2d06d50ce30b442"

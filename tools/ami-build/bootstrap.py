@@ -180,7 +180,6 @@ node.max_local_storage_nodes: 3
 
   def setup_es(self, root):
     self.create_opensearch_yml(root)
-    self.create_security
 
   def create_opensearch_yml(self, root):
     yml_path = os.path.join(root, "config", "opensearch.yml")
@@ -221,6 +220,11 @@ node.max_local_storage_nodes: 3
 }
     """
     pass
+
+
+class SecurityManager(object):
+  pass
+
 
 def main():
   parser = argparse.ArgumentParser()
