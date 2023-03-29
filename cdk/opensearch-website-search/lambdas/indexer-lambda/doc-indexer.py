@@ -250,13 +250,15 @@ def do_indexing(os_client, user_params):
                                  request_timeout=20)
     print("Existing alias - Bulk response: ", bulk_response)
     print(SECTION_SEPARATOR)
-
+    
+    indices_to_remove = [index for index in os_client.indices.get_alias(name=INDEX_ALIAS)]
+    
+    actions=[{"remove": {"index": index, "alias": INDEX_ALIAS}} for index in indices_to_remove]
+    actions.append({"add": {"index": new_index, "alias": INDEX_ALIAS}})
+    
     alias_status = os_client.indices.update_aliases(
       {
-        "actions": [
-          {"remove": {"index": old_index, "alias": INDEX_ALIAS}},
-          {"add": {"index": new_index, "alias": INDEX_ALIAS}}
-        ]
+        "actions": actions
       }
     )
     print("Alias update status: ", bulk_response)
