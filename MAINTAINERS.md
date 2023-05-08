@@ -6,21 +6,22 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 
 | Maintainer               | GitHub ID                                               | Affiliation |
 |--------------------------|---------------------------------------------------------|-------------|
-| Charlotte Henkle         | [CEHENKLE](https://github.com/CEHENKLE)                 | Amazon      |
 | Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                     | Amazon      |
+| Miki Barahmand           | [AMoo-Miki](https://github.com/AMoo-Miki)               | Amazon      |
+| Mark Cohen               | [macohen](https://github.com/macohen)                   | Amazon      |
+
+
+## Emeritus
+
+| Maintainer               | GitHub ID                                               | Affiliation |
+|--------------------------|---------------------------------------------------------|-------------|
+| Abbas Hussain            | [abbashus](https://github.com/abbashus)                 | Amazon      |
+| Charlotte Henkle         | [CEHENKLE](https://github.com/CEHENKLE)                 | Amazon      |
 | Himanshu Setia           | [setiah](https://github.com/setiah)                     | Amazon      |
 | Kartik Ganesh            | [kartg](https://github.com/kartg)                       | Amazon      |
 | Nick Knize               | [nknize](https://github.com/nknize)                     | Amazon      |
 | Rabi Panda               | [adnapibar](https://github.com/adnapibar)               | Amazon      |
 | Tianli Feng              | [tlfeng](https://github.com/tlfeng)                     | Amazon      |
 | Vacha Shah               | [VachaShah](https://github.com/VachaShah)               | Amazon      |
-| Miki Barahmand           | [AMoo-Miki](https://github.com/AMoo-Miki)               | Amazon      |
 | Ashwin P Chandran        | [ashwin-pc](https://github.com/ashwin-pc)               | Amazon      |
 | Sarat Vemulapalli        | [saratvemulapalli](https://github.com/saratvemulapalli) | Amazon      |
-| Mark Cohen               | [macohen](https://github.com/macohen)                   | Amazon      |
-
-## Emeritus
-
-| Maintainer    | GitHub ID                               | Affiliation |
-| ------------- | --------------------------------------- | ----------- |
-| Abbas Hussain | [abbashus](https://github.com/abbashus) | Amazon      |
