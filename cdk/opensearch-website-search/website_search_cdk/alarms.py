@@ -1,13 +1,15 @@
-from aws_cdk import (core as cdk, aws_cloudwatch as cloudwatch)
+from aws_cdk import Stack, Duration
+from aws_cdk import aws_cloudwatch as cloudwatch
+from constructs import Construct
 
 
-class AlarmsStack(cdk.Stack):
+class AlarmsStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     alarm_name_template = f'[{self.region}][website-search]{{}}'
-    ONE_MINUTE_DURATION = cdk.Duration.minutes(1)
+    ONE_MINUTE_DURATION = Duration.minutes(1)
     NAMESPACE = 'opensearch-website-search'
 
     alarms = [
@@ -66,10 +68,10 @@ class AlarmsStack(cdk.Stack):
                                   alarm_name=alarm.get('alarm_name'),
                                   alarm_description=alarm.get('alarm_description'),
                                   metric=cloudwatch.Metric(namespace=alarm.get('metric_namespace'),
-                                                           metric_name=alarm.get('metric_name')),
+                                                           metric_name=alarm.get('metric_name'),
+                                                           period=alarm.get('period', ONE_MINUTE_DURATION)),
                                   threshold=alarm.get('threshold'),
                                   comparison_operator=alarm.get('comparison_operator'),
-                                  period=alarm.get('period', ONE_MINUTE_DURATION),
                                   evaluation_periods=alarm.get('evaluation_periods', 3),
                                   datapoints_to_alarm=alarm.get('datapoints_to_alarm', 3),
                                   treat_missing_data=alarm.get('treat_missing_data', cloudwatch.TreatMissingData.BREACHING)

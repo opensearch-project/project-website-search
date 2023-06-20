@@ -1,7 +1,9 @@
 import os
 
-from aws_cdk import (aws_autoscaling as asg, aws_ec2 as ec2, core as cdk)
-from aws_cdk.core import Tags
+from aws_cdk import aws_autoscaling as asg
+from aws_cdk import aws_ec2 as ec2
+from constructs import Construct
+from aws_cdk import Tags, Stack
 
 # These are corp only access prefixes per region (you can access resources only within amazon corp network)
 # More info: https://apll.corp.amazon.com/
@@ -28,9 +30,9 @@ region = os.environ.get("CDK_DEPLOY_REGION", os.environ["CDK_DEFAULT_REGION"])
 prefixList = ec2.Peer.prefix_list(REGION_PREFIX_MAP[region])
 
 
-class Bastions(cdk.Stack):
+class Bastions(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, vpc, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     stack_prefix = self.node.try_get_context("stack_prefix")

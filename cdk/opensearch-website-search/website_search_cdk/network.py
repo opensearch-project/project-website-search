@@ -1,6 +1,9 @@
 import os
 
-from aws_cdk import (aws_ec2 as ec2, core as cdk)
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import Stack
+from constructs import Construct
+#, core as cdk)
 
 # For consistency with other languages, `cdk` is the preferred import name for
 # the CDK's core module.  The following line also imports it as `core` for use
@@ -32,9 +35,9 @@ region = os.environ.get("CDK_DEPLOY_REGION", os.environ["CDK_DEFAULT_REGION"])
 prefixList = ec2.Peer.prefix_list(REGION_PREFIX_MAP[region])
 
 
-class Network(cdk.Stack):
+class Network(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     cidr = self.node.try_get_context("cidr")
@@ -45,7 +48,8 @@ class Network(cdk.Stack):
     stack_prefix = self.node.try_get_context("stack_prefix")
 
     public_subnet = ec2.SubnetConfiguration(name="public", subnet_type=ec2.SubnetType.PUBLIC, cidr_mask=24)
-    private_subnet = ec2.SubnetConfiguration(name="private", subnet_type=ec2.SubnetType.PRIVATE, cidr_mask=24)
+    private_subnet = ec2.SubnetConfiguration(name="private", subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
+                                             cidr_mask=24)
 
     self.vpc = ec2.Vpc(self, stack_prefix + "cdk-vpc",
                        cidr=cidr,

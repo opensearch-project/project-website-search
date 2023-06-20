@@ -1,9 +1,13 @@
 import datetime
 from enum import Enum
 
-from aws_cdk import (aws_autoscaling as asg, aws_ec2 as ec2, aws_elasticloadbalancingv2 as elb, aws_iam as iam,
-                     aws_logs as logs, core as cdk)
-from aws_cdk.core import Tags
+from aws_cdk import aws_autoscaling as asg, CfnOutput
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import aws_elasticloadbalancingv2 as elb
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_logs as logs
+from aws_cdk import Tags, Fn, Stack
+from constructs import Construct
 
 
 # For consistency with other languages, `cdk` is the preferred import name for
@@ -37,8 +41,8 @@ class Security(Enum):
     return value in cls._value2member_map_
 
 
-class ClusterStack(cdk.Stack):
-  def __init__(self, scope: cdk.Construct, construct_id: str, vpc, sg, architecture, security, **kwargs) -> None:
+class ClusterStack(Stack):
+  def __init__(self, scope: Construct, construct_id: str, vpc, sg, architecture, security, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # Context variables can be passed from command line using -c/--context flag. The values are stored in
@@ -72,8 +76,7 @@ class ClusterStack(cdk.Stack):
     # if ami_id is None or ami_id == '':
     #   raise ValueError("Please provide a valid ami-id. This should be a Amazon Linux 2 based AMI")
 
-    ami_id = ec2.MachineImage.latest_amazon_linux(generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-                                                  cpu_type=ec2.AmazonLinuxCpuType.X86_64)
+    ami_id = ec2.MachineImage.latest_amazon_linux2023(cpu_type=ec2.AmazonLinuxCpuType.X86_64)
 
     # Creating IAM role for read only access
     read_secrets_policy = iam.PolicyStatement(
@@ -99,21 +102,7 @@ class ClusterStack(cdk.Stack):
                             inline_policies={'ReadSecrets': read_secrets_document}
                             )
 
-    # def get_ec2_settings(arch):
-    #     if arch == Architecture.X64.value:
-    #         instance_type = ec2.InstanceType.of(InstanceClass.m5.value, ec2.InstanceSize.XLARGE)
-    #         ami_id = ec2.MachineImage.latest_amazon_linux(generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    #                                                       cpu_type=ec2.AmazonLinuxCpuType.X86_64)
-    #         return instance_type, ami_id
-    #     elif arch == Architecture.ARM64.value:
-    #         instance_type = ec2.InstanceType.of(InstanceClass.m6g.value, ec2.InstanceSize.XLARGE)
-    #         ami_id = ec2.MachineImage.latest_amazon_linux(generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    #                                                       cpu_type=ec2.AmazonLinuxCpuType.ARM_64)
-    #         return instance_type, ami_id
-    #     else:
-    #         raise ValueError("Unrecognised architecture")
-
-    stack_name = cdk.Stack.of(self).stack_name
+    stack_name = Stack.of(self).stack_name
 
     # Logging
     dt = datetime.datetime.utcnow()
@@ -166,19 +155,15 @@ class ClusterStack(cdk.Stack):
     userdata_map["data"].update(userdata_map["common"])
 
     with open(f"./userdata/{distribution}/main.sh") as f:
-      master_userdata = cdk.Fn.sub(f.read(), userdata_map["master"])
+      master_userdata = Fn.sub(f.read(), userdata_map["master"])
     with open(f"./userdata/{distribution}/main.sh") as f:
-      seed_userdata = cdk.Fn.sub(f.read(), userdata_map["seed"])
+      seed_userdata = Fn.sub(f.read(), userdata_map["seed"])
     with open(f"./userdata/{distribution}/main.sh") as f:
-      data_userdata = cdk.Fn.sub(f.read(), userdata_map["data"])
+      data_userdata = Fn.sub(f.read(), userdata_map["data"])
     with open(f"./userdata/{distribution}/main.sh") as f:
-      client_userdata = cdk.Fn.sub(f.read(), userdata_map["client"])
+      client_userdata = Fn.sub(f.read(), userdata_map["client"])
     with open(f"./userdata/{distribution}/dashboards.sh") as f:
-      dashboards_userdata = cdk.Fn.sub(f.read(), userdata_map["dashboards"])
-
-    # # ec2_instance_type, ami_id = get_ec2_settings(architecture)
-    # ami_id = ec2.MachineImage.latest_amazon_linux(generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    #                                               cpu_type=ec2.AmazonLinuxCpuType.X86_64)
+      dashboards_userdata = Fn.sub(f.read(), userdata_map["dashboards"])
 
     # Launching autoscaling groups that will configure all nodes
     master_nodes = asg.AutoScalingGroup(self, "MasterASG",
@@ -189,7 +174,7 @@ class ClusterStack(cdk.Stack):
                                         desired_capacity=master_node_count,
                                         max_capacity=master_node_count,
                                         min_capacity=master_node_count,
-                                        vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                        vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                         key_name=keypair,
                                         # TODO: do we still need to have keypair since this will be in private subnet
                                         role=ec2_iam_role,
@@ -204,7 +189,7 @@ class ClusterStack(cdk.Stack):
                                      desired_capacity=1,
                                      max_capacity=1,
                                      min_capacity=1,
-                                     vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                     vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                      key_name=keypair,
                                      # TODO: do we still need to have keypair since this will be in private subnet
                                      role=ec2_iam_role,
@@ -220,7 +205,7 @@ class ClusterStack(cdk.Stack):
                                       desired_capacity=data_node_count,
                                       max_capacity=data_node_count,
                                       min_capacity=data_node_count,
-                                      vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                      vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                       key_name=keypair,
                                       # TODO: do we still need to have keypair since this will be in private subnet
                                       role=ec2_iam_role,
@@ -232,7 +217,7 @@ class ClusterStack(cdk.Stack):
     self.nlb = elb.NetworkLoadBalancer(self, stack_prefix + "NetworkLoadBalancer",
                                        vpc=vpc,
                                        internet_facing=False,
-                                       vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                       vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                        deletion_protection=True)
 
     self.opensearch_listener = self.nlb.add_listener("opensearch", port=nlb_opensearch_port,
@@ -249,5 +234,5 @@ class ClusterStack(cdk.Stack):
     self.dashboards_listener.add_targets("DashboardsTarget",
                                          port=5601,
                                          targets=[data_nodes])
-    cdk.CfnOutput(self, "Load Balancer Endpoint",
+    CfnOutput(self, "Load Balancer Endpoint",
                   value=self.nlb.load_balancer_dns_name)

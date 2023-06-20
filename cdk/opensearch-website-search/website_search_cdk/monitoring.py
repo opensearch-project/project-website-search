@@ -1,10 +1,16 @@
-from aws_cdk import (aws_ec2 as ec2, aws_events as events, aws_events_targets as targets, aws_iam as iam,
-                     aws_lambda as aws_lambda, core as cdk)
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as targets
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_lambda as aws_lambda
+from aws_cdk import Stack
+from constructs import Construct
+
 import os
 
-class MonitoringStack(cdk.Stack):
+class MonitoringStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, vpc, nlb, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, nlb, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     monitoring_user = self.node.try_get_context("monitoring_user")
@@ -33,9 +39,9 @@ class MonitoringStack(cdk.Stack):
     monitoring_lambda = aws_lambda.Function(self, 'MonitoringLambda',
                                             handler='monitor.handler',
                                             runtime=aws_lambda.Runtime.PYTHON_3_9,
-                                            code=aws_lambda.Code.asset('lambdas/monitoring-lambda'),
+                                            code=aws_lambda.Code.from_asset('lambdas/monitoring-lambda'),
                                             vpc=vpc,
-                                            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                             role=monitoring_role,
                                             environment={
                                               'MONITORING_USER': os.getenv("MONITORING_USER", monitoring_user),

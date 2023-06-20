@@ -6,7 +6,7 @@
   "monitoring_stack_name": "monitoring",
   "cidr": "10.9.0.0/21",
   "distribution": "tar",
-  "keypair": "",
+  "keypair": "opensearchorg-kp",
   "architecture": "x64",
   "ami_id": "",
   "url": "https://artifacts.opensearch.org/releases/bundle/opensearch/1.0.0/opensearch-1.0.0-linux-x64.tar.gz",
@@ -23,5 +23,13 @@
   "monitoring_pass": "",
   "allowed_origins": [
     "*"
+  ],
+  "availability-zones:account=621343036875:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
   ]
 }

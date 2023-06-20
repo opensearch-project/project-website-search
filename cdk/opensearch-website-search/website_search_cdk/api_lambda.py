@@ -1,10 +1,15 @@
-from aws_cdk import (aws_apigateway as gateway, aws_ec2 as ec2, aws_lambda, aws_logs, core as cdk)
+from aws_cdk import aws_apigateway as gateway
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import aws_lambda
+from aws_cdk import aws_logs
+from aws_cdk import Stack
+from constructs import Construct
 import os
 
 
-class ApiLambdaStack(cdk.Stack):
+class ApiLambdaStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, vpc, nlb, opensearch_listener, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, nlb, opensearch_listener, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     stack_prefix = self.node.try_get_context("stack_prefix")
@@ -22,9 +27,9 @@ class ApiLambdaStack(cdk.Stack):
     search_lambda = aws_lambda.Function(self, 'search-lambda',
                                         handler='doc-search.handler',
                                         runtime=aws_lambda.Runtime.PYTHON_3_9,
-                                        code=aws_lambda.Code.asset('lambdas/search-lambda'),
+                                        code=aws_lambda.Code.from_asset('lambdas/search-lambda'),
                                         vpc=vpc,
-                                        vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+                                        vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
                                         environment={
                                           'SEARCH_USER': os.getenv("SEARCH_USER", search_user),
                                           'SEARCH_PASS': os.getenv("SEARCH_PASS", search_pass),
@@ -60,7 +65,8 @@ class ApiLambdaStack(cdk.Stack):
     api = gateway.RestApi(self, stack_prefix + 'opensearch-api-gateway',
                           rest_api_name=stack_prefix + 'opensearch-api-gateway',
                           description="APIs for search and managing OpenSearch cluster",
-                          deploy_options=stage_options
+                          deploy_options=stage_options,
+                          cloud_watch_role=True
                           )
 
     search_entity = api.root.add_resource(
