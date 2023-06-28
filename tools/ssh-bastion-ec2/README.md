@@ -33,7 +33,7 @@ export AWS_DEFAULT_REGION=us-east-1
                 "ec2:DescribeInstances",
                 "secretsmanager:GetSecretValue"
             ],
-            "Resource": "*"
+            "Resource": "<Resource ARN>"
         }
     ]
 }
