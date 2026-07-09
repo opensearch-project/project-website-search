@@ -4,19 +4,19 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 
 ## Current Maintainers
 
-| Maintainer               | GitHub ID                                               | Affiliation |
-|--------------------------|---------------------------------------------------------|-------------|
-| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                     | Amazon      |
-| Miki Barahmand           | [AMoo-Miki](https://github.com/AMoo-Miki)               | Amazon      |
-| Mark Cohen               | [macohen](https://github.com/macohen)                   | Amazon      |
+| Maintainer     | GitHub ID                                 | Affiliation |
+| -------------- | ----------------------------------------- | ----------- |
+| Miki Barahmand | [AMoo-Miki](https://github.com/AMoo-Miki) | Amazon      |
+| Mark Cohen     | [macohen](https://github.com/macohen)     | Amazon      |
 
 
 ## Emeritus
 
 | Maintainer               | GitHub ID                                               | Affiliation |
-|--------------------------|---------------------------------------------------------|-------------|
+| ------------------------ | ------------------------------------------------------- | ----------- |
 | Abbas Hussain            | [abbashus](https://github.com/abbashus)                 | Amazon      |
 | Charlotte Henkle         | [CEHENKLE](https://github.com/CEHENKLE)                 | Amazon      |
+| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                     | Independent |
 | Himanshu Setia           | [setiah](https://github.com/setiah)                     | Amazon      |
 | Kartik Ganesh            | [kartg](https://github.com/kartg)                       | Amazon      |
 | Nick Knize               | [nknize](https://github.com/nknize)                     | Amazon      |
