@@ -88,7 +88,7 @@ Deploy using AWS CLI
 ```
 aws lambda update-function-code \
     --function-name  <your-lambda-function-name> \
-    --zip-file fileb:/my-deployment-package.zip
+    --zip-file fileb://my-deployment-package.zip
 ```
 
 - Execution
