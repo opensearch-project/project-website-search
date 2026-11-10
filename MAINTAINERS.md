@@ -8,7 +8,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 |--------------------------|---------------------------------------------------------|-------------|
 | Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                     | Amazon      |
 | Miki Barahmand           | [AMoo-Miki](https://github.com/AMoo-Miki)               | Amazon      |
-| Mark Cohen               | [macohen](https://github.com/macohen)                   | Amazon      |
 
 
 ## Emeritus
@@ -25,3 +24,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Vacha Shah               | [VachaShah](https://github.com/VachaShah)               | Amazon      |
 | Ashwin P Chandran        | [ashwin-pc](https://github.com/ashwin-pc)               | Amazon      |
 | Sarat Vemulapalli        | [saratvemulapalli](https://github.com/saratvemulapalli) | Amazon      |
+| Mark Cohen               | [macohen](https://github.com/macohen)                   | Amazon      |
